@@ -5,15 +5,16 @@ from jinja2 import Template
 
 
 def validate_var(ctx, param, value):
-    if not re.match(r'^(.+)=(.+)$', str(value)):
-        raise click.BadParameter('var needs to be of the form var=value')
+    for v in value:
+        if not re.match(r'^(.+)=(.+)$', v):
+            raise click.BadParameter(f'var needs to be of the form var=value (while processing {v})')
     return value
 
 
 @click.command()
-@click.option('--template', '-t', type=click.File('r'),
+@click.option('--template', '-t', type=click.File('r'), required=True,
              help='Path to the template file')
-@click.option('--output', '-o', type=click.File('w'),
+@click.option('--output', '-o', type=click.File('w'), required=True,
               help='Path to the output file')
 @click.option('--var', '-v', multiple=True, type=str, callback=validate_var,
               help='Variable in the form var=value, can be specified multiple times')
